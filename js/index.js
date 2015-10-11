@@ -9,7 +9,7 @@ function MainCtrl($scope, $localStorage) {
     {title: "Musts + shoulds + coulds + wont's", value :['m', 's', 'c', 'w']}
   ];
 
-  vm.stories = $localStorage.stories;
+  vm.stories = $localStorage.stories || [{},{},{},{},{}];
   vm.hourlyRate = $localStorage.hourlyRate || 95.00;
   vm.filter = {
     "moscow": vm.moscowFilterOptions[0].value,
@@ -32,12 +32,7 @@ function MainCtrl($scope, $localStorage) {
     return [vm.stories, vm.filter, vm.hourlyRate, vm.suppliments];
   }, function (newValue) {
     vm.updateValues();
-    // Auto-save to local storage at most, once every 2 seconds.
-    _.throttle(function(){
-      $localStorage.stories = vm.stories;
-      $localStorage.hourlyRate = vm.hourlyRate;
-      $localStorage.suppliments = vm.suppliments;
-    }, 2000);
+    vm.saveValues();
   }, true);
 
   vm.updateValues = function () {
@@ -106,6 +101,12 @@ function MainCtrl($scope, $localStorage) {
       total: total
     }
   };
+
+  vm.saveValues = _.throttle(function(){
+    $localStorage.stories = vm.stories;
+    $localStorage.hourlyRate = vm.hourlyRate;
+    $localStorage.suppliments = vm.suppliments;
+  }, 2000);
 
   // To format the cell, we'll have to provide a callback function, that each column is configured to use.
   // then, we'll be able to read columnN and add a format if it's in the filter.
